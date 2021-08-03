@@ -22,11 +22,12 @@ func main() {
 		log.Fatal("Failed to create producer:", err)
 	}
 	r := gin.Default()
-	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
-		"admin": "admin",
-		"orch":  "rest2kafka",
-	}))
-	authorized.POST("/:topic", func(c *gin.Context) {
+
+	r.POST("/:topic", func(c *gin.Context) {
+		if c.GetHeader("Authorization") != os.Getenv("TOKEN") {
+			c.Status(http.StatusUnauthorized)
+			return
+		}
 		var request Request
 		err = c.ShouldBindJSON(&request)
 		if err != nil {
