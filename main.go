@@ -99,8 +99,8 @@ func main() {
 			"go.events.channel.enable":        true,
 			"enable.auto.commit":              false,
 			"go.application.rebalance.enable": true,
-			"enable.partition.eof":            true,
-			"auto.offset.reset":               "earliest"})
+			"enable.partition.eof":            false,
+			"auto.offset.reset":               "latest"})
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -116,7 +116,6 @@ func main() {
 				case kafka.RevokedPartitions:
 					consumer.Unassign()
 				case *kafka.Message:
-
 					b, _ := json.Marshal(TopicMessage{Offset: int64(e.TopicPartition.Offset), Key: string(e.Key), Value: string(e.Value), Timestamp: e.Timestamp})
 					ws.WriteMessage(mt, b)
 				}
